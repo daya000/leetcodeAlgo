@@ -18,6 +18,16 @@ public class TreeNode {
         this.right = right;
     }
 
+    public TreeNode(int value) {
+        this.value = String.valueOf(value);
+    }
+
+    public TreeNode(int value, TreeNode left, TreeNode right) {
+        this.value = String.valueOf(value);
+        this.left = left;
+        this.right = right;
+    }
+
     public TreeNode(String value) {
         this.value = value;
     }
@@ -40,6 +50,11 @@ public class TreeNode {
 
     TreeNode left;
     TreeNode right;
+
+    @Override
+    public String toString() {
+        return value;
+    }
 
     public TreeNode () {
 

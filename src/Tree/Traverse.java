@@ -9,6 +9,14 @@ import java.util.Stack;
  *    b   c
  *   / \ / \
  *  d  e f  g
+ *
+ *  三种遍历的非递归算法异同点分析：
+ *  1）三种遍历都是一直找左子树
+ *  2）其中先序遍历找左子树过程中先遍逐层遍历根节点，然后在抵达最远左子树时倒序遍历左右节点
+ *  3）中序遍历直到抵达最远左子树开始遍历左节点和父节点
+ *  4）后序遍历难点在于，抵达最远左子树后要先访问左右节点最后才是父节点。需要额外变量储存上次遍历节点信息，
+ *  以此判断是否遍历过右节点。如果无则遍历右节点，并将父节点入栈。若非则回退遍历父节点。
+ *
  */
 public class Traverse {
     public static void preOrderTraverse (TreeNode root) {
@@ -19,7 +27,7 @@ public class Traverse {
     }
 
     public static void preOrderTraverseNonRecurrsive (TreeNode root) {
-        Stack stack = new Stack();
+        Stack<TreeNode> stack = new Stack();
         while (root!=null || !stack.isEmpty()) {
 
             while (root!=null) {
@@ -28,7 +36,7 @@ public class Traverse {
                 root = root.getLeft();
             }
             if (!stack.isEmpty()) {
-                root = (TreeNode) stack.pop();
+                root =  stack.pop();
                 root = root.getRight();
             }
         }
@@ -43,7 +51,7 @@ public class Traverse {
     }
 
     public static void midOrderTraverseNonRecurrsive (TreeNode root) {
-        Stack stack = new Stack();
+        Stack<TreeNode> stack = new Stack();
         while (root!=null || !stack.isEmpty()) {
 
             while (root!=null) {
@@ -52,7 +60,7 @@ public class Traverse {
             }
 
             if (!stack.isEmpty()) {
-                root = (TreeNode) stack.pop();
+                root =  stack.pop();
                 System.out.print(root.getValue() + " --> ");
                 root = root.getRight();
             }
@@ -68,27 +76,26 @@ public class Traverse {
     }
 
     public static void postOrderTraverseNonRecurrsive (TreeNode root) {
-        Stack stack = new Stack();
+        Stack<TreeNode> stack = new Stack();
+        TreeNode prev = null;
         while (root!=null || !stack.isEmpty()) {
             while (root!=null) {
                 stack.push(root);
                 root = root.getLeft();
             }
+
             if (!stack.isEmpty()) {
-                root = (TreeNode) stack.pop();
-                if (root.getRight()!=null) {
-                    System.out.print(root.getRight().getValue() + " --> ");
-                    System.out.print(root.getValue() + " --> ");
-                    if (!stack.isEmpty()) {
-                        root = (TreeNode) stack.pop();
-                    }
+                root = stack.pop();
+                //IMPORTANT: filter out case when right leaf is traversed using second condition
+                if (root.getRight() != null && !prev.equals(root.getRight())) {
+                    stack.push(root);
+                    root = root.getRight();
                 }
-
                 else {
-
-                System.out.print(root.getValue() + " --> ");
+                    System.out.print(root.getValue() + " --> ");
+                    prev = root;
+                    root = null;     //set to null to get directly into line 87
                 }
-                root = root.getRight();
             }
         }
 
